@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,10 +18,13 @@ import java.util.List;
 @Service("userService")
 public class UserService implements UserDetailsService {
 	
+	//BCryptPasswordEncoder encoder = passwordEncoder();
+	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(4);
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user =  repo.findByUser(username);
-		return new org.springframework.security.core.userdetails.User(user.getUser(),user.getPassword(),user.isActivo(),user.isActivo(),user.isActivo(),user.isActivo(),buildGranted(user.getRol()));
+		return new org.springframework.security.core.userdetails.User(user.getUser(),encoder.encode(user.getPassword()),user.isActivo(),user.isActivo(),user.isActivo(),user.isActivo(),buildGranted(user.getRol()));
 	}
 	
 	private List<GrantedAuthority> buildGranted(byte rol){
